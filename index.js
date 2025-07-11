@@ -68,7 +68,8 @@ app.post('/render', upload.fields([{ name: 'image' }, { name: 'audio' }]), async
         const driveRes = await drive.files.create({
           resource: fileMetadata,
           media,
-          fields: 'id, webViewLink'
+          fields: 'id, webViewLink',
+          supportsAllDrives: true,
         });
 
         fs.unlinkSync(image.path);
