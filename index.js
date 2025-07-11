@@ -5,11 +5,13 @@ const fs = require('fs');
 const path = require('path');
 const multer = require('multer');
 const { google } = require('googleapis');
+const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
 const port = process.env.PORT || 3000;
 app.use(express.json());
+app.use(cors());
 
 const upload = multer({ dest: 'uploads/' });
 
@@ -30,9 +32,18 @@ const driveFolderId = process.env.GOOGLE_DRIVE_FOLDER_ID;
 // Ensure render dir exists
 if (!fs.existsSync('renders')) fs.mkdirSync('renders');
 
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok' });
+});
+
 // Endpoint to render video from image + audio
 app.post('/render', upload.fields([{ name: 'image' }, { name: 'audio' }]), async (req, res) => {
   try {
+    if (!req.files?.image?.[0] || !req.files?.audio?.[0]) {
+      return res.status(400).json({ error: 'Missing image or audio file' });
+    }
+
     const image = req.files.image[0];
     const audio = req.files.audio[0];
     const filename = req.body.filename || 'output.mp4';
@@ -41,7 +52,7 @@ app.post('/render', upload.fields([{ name: 'image' }, { name: 'audio' }]), async
     const cmd = `ffmpeg -loop 1 -i ${image.path} -i ${audio.path} -shortest -c:v libx264 -pix_fmt yuv420p -tune stillimage -y ${outputPath}`;
     console.log(`Rendering ${filename}...`);
 
-    exec(cmd, async (err) => {
+    exec(cmd, { timeout: 120000 }, async (err) => {
       if (err) return res.status(500).json({ error: err.message });
 
       const fileMetadata = {
@@ -63,6 +74,10 @@ app.post('/render', upload.fields([{ name: 'image' }, { name: 'audio' }]), async
         fs.unlinkSync(image.path);
         fs.unlinkSync(audio.path);
         fs.unlinkSync(outputPath);
+
+        const uploadDir = 'uploads';
+        const isUploadsEmpty = fs.readdirSync(uploadDir).length === 0;
+        if (isUploadsEmpty) fs.rmdirSync(uploadDir);
 
         res.json({
           message: 'Rendered and uploaded',
@@ -90,7 +105,7 @@ app.post('/concat', async (req, res) => {
     const cmd = `ffmpeg -f concat -safe 0 -i ${listPath} -c copy -y ${outputPath}`;
     console.log(`Concatenating into ${filename}...`);
 
-    exec(cmd, async (err) => {
+    exec(cmd, { timeout: 180000 }, async (err) => {
       if (err) return res.status(500).json({ error: err.message });
 
       const fileMetadata = {
