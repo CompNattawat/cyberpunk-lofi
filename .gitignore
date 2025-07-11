@@ -3,4 +3,8 @@ node_modules/
 renders/
 uploads/
 service-account.json
+*.mp4
+*.mp3
+*.png
+*.jpg
 .env
