@@ -144,6 +144,11 @@ process.on('SIGINT', () => {
   process.exit();
 });
 
+// Health check endpoint
+app.get('/ping', (req, res) => {
+  res.json({ status: 'ok', message: 'FFmpeg server is alive!' });
+});
+
 app.listen(port, () => {
   console.log(`FFmpeg server listening on port ${port}`);
 });
