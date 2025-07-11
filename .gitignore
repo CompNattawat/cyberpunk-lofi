@@ -1,0 +1,6 @@
+# Prevent sensitive credentials from being committed
+node_modules/
+renders/
+uploads/
+service-account.json
+.env
