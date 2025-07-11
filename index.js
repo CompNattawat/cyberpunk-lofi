@@ -49,7 +49,7 @@ app.post('/render', upload.fields([{ name: 'image' }, { name: 'audio' }]), async
     const filename = req.body.filename || 'output.mp4';
     const outputPath = path.join('renders', filename);
 
-    const cmd = `ffmpeg -loop 1 -i ${image.path} -i ${audio.path} -shortest -c:v libx264 -pix_fmt yuv420p -tune stillimage -y ${outputPath}`;
+    const cmd = `ffmpeg -loop 1 -i ${image.path} -i ${audio.path} -shortest -t 60 -c:v libx264 -pix_fmt yuv420p -tune stillimage -y ${outputPath}`;
     console.log(`Rendering ${filename}...`);
 
     exec(cmd, { timeout: 120000 }, async (err) => {
