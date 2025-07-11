@@ -1,27 +1,28 @@
 {
   "name": "cyberpunk-lofi-ffmpeg-service",
   "version": "1.0.0",
-  "description": "Node.js server for rendering lo-fi video from audio/image and uploading to Google Drive",
+  "description": "Node.js server for rendering lo-fi videos using FFmpeg and uploading to Google Drive. Supports REST API, auto-clean, concat, and n8n integration.",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js"
   },
-  "author": "CompNattawat",
-  "license": "MIT",
   "keywords": [
     "ffmpeg",
     "google-drive",
-    "nodejs",
-    "express",
+    "video-render",
     "lofi",
-    "render",
-    "video-generator"
+    "nodejs",
+    "api",
+    "express",
+    "n8n"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/CompNattawat/cyberpunk-lofi-renderer"
   },
+  "author": "CompNattawat",
+  "license": "MIT",
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
@@ -32,5 +33,8 @@
   },
   "devDependencies": {
     "nodemon": "^3.0.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
